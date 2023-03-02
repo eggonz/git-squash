@@ -1,0 +1,75 @@
+#!/bin/bash
+
+# help
+Help()
+{
+  echo "help"
+  echo "  squash src_branch dst_branch : squash-merge srg into dst with a commit with the name of the src branch"
+  echo "  squash -h : help"
+}
+
+while getopts ":h" option; do
+   case $option in
+      h) # display Help
+         Help
+         exit;;
+     \?) # incorrect option
+         echo "Error: Invalid option"
+         exit;;
+   esac
+done
+
+# check git repository exists
+if [ -z "$(git rev-parse --is-inside-work-tree 2>/dev/null)" ]; then
+  echo "Error: git repository not found in current directory"
+  exit 1
+fi
+
+# read input
+SRC_BRANCH=$1
+DST_BRANCH=$2
+
+# check arguments are not null
+if [ -z "$SRC_BRANCH" ]; then
+  echo "Error: missing argument src_branch"
+  exit 1
+fi
+if [ -z "$DST_BRANCH" ]; then
+  echo "Error: missing argument dst_branch"
+  exit 1
+fi
+if [ "$SRC_BRANCH" == "$DST_BRANCH" ]; then
+  echo "Error: same src and dst branch"
+  exit 1
+fi
+
+# check branches
+if [ -z "$(git rev-parse --verify $SRC_BRANCH 2>/dev/null)" ]; then
+  echo "Error: branch $SRC_BRANCH does not exist"
+  exit 1
+fi
+if [ -z "$(git rev-parse --verify $DST_BRANCH 2>/dev/null)" ]; then
+  echo "Error: branch $DST_BRANCH does not exist"
+  exit 1
+fi
+
+# main program
+
+TMP_BRANCH=$SRC_BRANCH-squash
+
+git checkout -b $TMP_BRANCH $DST_BRANCH
+if [ $? -ne 0 ]; then
+  git checkout $TMP_BRANCH
+  if [ $? -ne 0 ]; then
+    echo "Error: aborting squash..."
+    exit 1
+  fi
+fi
+
+git merge --squash $SRC_BRANCH
+git commit -m "squash $SRC_BRANCH"
+
+git checkout $DST_BRANCH
+git merge $TMP_BRANCH
+
+git branch -D $TMP_BRANCH
