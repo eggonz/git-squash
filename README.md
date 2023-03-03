@@ -1,15 +1,19 @@
 # git-squash customized tool
 
+The `squash` command performs a squash-merge from `<src_branch>` to the current branch.
+The squash commit message contains the name of the merged branch and information about the squashed commits from the original branch.
+The commits in the original branch are kept unsquashed.
+
 ## use
 
 Run the following command from a folder with a git project:
 
 ```bash
-squash src_branch dst_branch
+squash <src_branch>
 ```
 
-The `src_branch` and `dst_branch` will be autocompleted with the branches of the current git repository.
-Arguments of the command cannot be null and branches must exist in the repository.
+- `<src_branch>` can be tab-autocompleted with the branches of the current git repository.
+- `<src_branch>` cannot be null, and it must exist in the repository.
 
 
 ## install
@@ -17,7 +21,6 @@ Arguments of the command cannot be null and branches must exist in the repositor
 ```bash
 sh install.sh
 ```
-
 The terminal might need to be restarted after installation.
 
 The script will do the following:
@@ -41,7 +44,11 @@ The script will do the following:
 
 ## reference / sources
 
-- script
+- script v0.2
+  - https://andy-carter.com/blog/automating-git-commit-messages-with-git-hooks
+  - https://git-scm.com/docs/githooks
+  - https://stackoverflow.com/questions/6245570/how-do-i-get-the-current-branch-name-in-git
+- script v0.1
   - https://stackoverflow.com/questions/30136558/how-to-squash-commits-which-have-merge-commit-in-between
   - https://superuser.com/questions/289539/custom-bash-tab-completion
   - https://unix.stackexchange.com/questions/13466/can-grep-output-only-specified-groupings-that-match
