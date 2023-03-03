@@ -4,7 +4,7 @@
 Help()
 {
   echo "help"
-  echo "  squash src_branch : squash-merge src_branch into current branch"
+  echo "  squash <src_branch> : squash-merge <src_branch> into current branch"
   echo "  squash -h : help"
 }
 
@@ -21,37 +21,41 @@ done
 
 # check git repository exists
 if [ -z "$(git rev-parse --is-inside-work-tree 2>/dev/null)" ]; then
-  echo "Error: git repository not found in current directory"
+  echo "Error: Git repository not found in current directory"
   exit 1
 fi
 
 # read input
 BRANCH=$1
+CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
 if [ -z "$BRANCH" ]; then
-  echo "Error: missing argument src_branch"
+  echo "Error: Missing argument <src_branch>"
   exit 1
 fi
-if [ -z "$(git rev-parse --verify $SRC_BRANCH 2>/dev/null)" ]; then
-  echo "Error: branch $SRC_BRANCH does not exist"
+if [ -z "$(git rev-parse --verify $BRANCH 2>/dev/null)" ]; then
+  echo "Error: Branch \"$BRANCH\" does not exist"
+  exit 1
+fi
+if [ "$BRANCH" == "$CURRENT_BRANCH" ]; then
+  echo "Error: <src_branch> cannot be current branch"
   exit 1
 fi
 
 # main program
 
-CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
-
-echo "Squashing branch $BRANCH into $CURRENT_BRANCH..."
+echo "Info: Squashing branch \"$BRANCH\" into \"$CURRENT_BRANCH\"..."
 
 git merge --squash $BRANCH
 if [ $? -ne 0 ]; then
-  echo "Error: aborting squash..."
+  echo "Error: Aborting squash..."
   exit 1
 fi
 
 # append branch name to squash msg
 cat > squash_msg.tmp <<- EOM
-$src
+squash - $BRANCH
+
 $(cat .git/SQUASH_MSG)
 EOM
 
