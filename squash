@@ -14,14 +14,14 @@ while getopts ":h" option; do
          Help
          exit;;
      \?) # incorrect option
-         echo "Error: Invalid option"
+         echo "[squash ERROR] Invalid option"
          exit;;
    esac
 done
 
 # check git repository exists
 if [ -z "$(git rev-parse --is-inside-work-tree 2>/dev/null)" ]; then
-  echo "Error: Git repository not found in current directory"
+  echo "[squash ERROR] Git repository not found in current directory"
   exit 1
 fi
 
@@ -30,28 +30,28 @@ BRANCH=$1
 CURRENT_BRANCH=$(git rev-parse --abbrev-ref HEAD)
 
 if [ -z "$BRANCH" ]; then
-  echo "Error: Missing argument <src_branch>"
+  echo "[squash ERROR] Missing argument <src_branch>"
   exit 1
 fi
 if [ -z "$(git rev-parse --verify $BRANCH 2>/dev/null)" ]; then
-  echo "Error: Branch \"$BRANCH\" does not exist"
+  echo "[squash ERROR] Branch \"$BRANCH\" does not exist"
   exit 1
 fi
 if [ "$BRANCH" == "$CURRENT_BRANCH" ]; then
-  echo "Error: <src_branch> cannot be current branch"
+  echo "[squash ERROR] <src_branch> cannot be current branch"
   exit 1
 fi
 
 # main program
 
-echo "Info: Stash current local changes"
+echo "[squash INFO] Stash current local changes"
 STASH_NAME="squash_tmp_${CURRENT_BRANCH}"
 git stash push -m $STASH_NAME
 
-echo "Info: Squashing branch \"$BRANCH\" into \"$CURRENT_BRANCH\""
+echo "[squash INFO] Squashing branch \"$BRANCH\" into \"$CURRENT_BRANCH\""
 git merge --squash $BRANCH
 if [ $? -ne 0 ]; then
-  echo "Error: Aborting squash..."
+  echo "[squash ERROR] Aborting squash..."
   exit 1
 fi
 
@@ -65,5 +65,5 @@ EOM
 git commit -F squash_msg.tmp
 rm squash_msg.tmp
 
-echo "Info: Unstashing saved local changes"
+echo "[squash INFO] Unstashing saved local changes"
 git stash apply stash^{/$STASH_NAME}
