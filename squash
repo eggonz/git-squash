@@ -44,8 +44,11 @@ fi
 
 # main program
 
-echo "Info: Squashing branch \"$BRANCH\" into \"$CURRENT_BRANCH\"..."
+echo "Info: Stash current local changes"
+STASH_NAME="squash_tmp_${CURRENT_BRANCH}"
+git stash push -m $STASH_NAME
 
+echo "Info: Squashing branch \"$BRANCH\" into \"$CURRENT_BRANCH\""
 git merge --squash $BRANCH
 if [ $? -ne 0 ]; then
   echo "Error: Aborting squash..."
@@ -61,3 +64,6 @@ EOM
 
 git commit -F squash_msg.tmp
 rm squash_msg.tmp
+
+echo "Info: Unstashing saved local changes"
+git stash apply stash^{/$STASH_NAME}
