@@ -19,7 +19,8 @@ squash <src_branch>
 ## install
 
 ```bash
-sh install.sh
+chmod +x install
+./install
 ```
 The terminal might need to be restarted after installation.
 
@@ -28,12 +29,13 @@ The script will do the following:
 2. Remove existing autocomplete script from `~/.bashrc`
 3. Append autocomplete script to `~/.bashrc`
 
-The tool can be reinstalled running `install.sh` again.
+The tool can be reinstalled running `./install` again.
 
 ## uninstall
 
 ```bash
-sh uninstall.sh
+chmod +x uninstall
+./uninstall
 ```
 
 The script will do the following:
@@ -62,7 +64,8 @@ The script will do the following:
   - https://askubuntu.com/questions/29370/how-to-check-if-a-command-succeeded
   - https://www.ionos.com/digitalguide/websites/web-development/renaming-a-git-branch/
 - install
-  - https://linuxconfig.org/bash-scripting-check-if-directory-exists)
+  - https://linuxconfig.org/bash-scripting-check-if-directory-exists
+  - https://unix.stackexchange.com/questions/253892/syntax-error-unexpected-when-creating-an-array
 - uninstall
   - https://www.baeldung.com/linux/delete-lines-containing-string-from-file
   - https://stackoverflow.com/questions/23929235/multi-line-string-with-extra-space-preserved-indentation
