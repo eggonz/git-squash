@@ -56,10 +56,11 @@ if [ $? -ne 0 ]; then
 fi
 
 # append branch name to squash msg
+SQUASH_MSG = "$(cat $(git rev-parse --git-dir)/SQUASH_MSG)"
 cat > squash_msg.tmp <<- EOM
 squash - $BRANCH
 
-$(cat .git/SQUASH_MSG)
+$SQUASH_MSG
 EOM
 
 git commit -F squash_msg.tmp
