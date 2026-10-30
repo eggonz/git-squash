@@ -1,13 +1,41 @@
 #!/bin/bash
+#
+# uninstall.sh : remove the "squash" command and its ~/.bashrc configuration
+
+set -u
 
 START_MARK="# >>> squash-autocomplete >>>"
 END_MARK="# <<< squash-autocomplete <<<"
+DIR_MARK="# squash-install-dir: "
 
-# remove executable from ~/bin/
-rm -f "$HOME/bin/squash"
+case "${1:-}" in
+  -h|--help)
+    echo "help"
+    echo "  ./uninstall.sh : remove the \"squash\" command and its configuration from ~/.bashrc"
+    echo "  ./uninstall.sh -h : help"
+    exit 0;;
+esac
 
 
-# remove autocomplete from ~/.bashrc
+# find install dirs recorded in ~/.bashrc (older installations used $HOME/bin)
+install_dirs=("$HOME/bin")
+if [ -f "$HOME/.bashrc" ]; then
+  while IFS= read -r dir; do
+    install_dirs+=("$dir")
+  done < <(grep -F "$DIR_MARK" "$HOME/.bashrc" | sed "s|^$DIR_MARK||")
+fi
+
+
+# remove executable (only if it is a squash installation)
+for dir in "${install_dirs[@]}"; do
+  target="$dir/squash"
+  if [ -f "$target" ] && grep -qF "[squash INFO]" "$target"; then
+    rm -f "$target" && echo "[squash INFO] Removed $target"
+  fi
+done
+
+
+# remove PATH and autocomplete from ~/.bashrc
 if [ -f "$HOME/.bashrc" ]; then
   n_starts=$(grep -cFx "$START_MARK" "$HOME/.bashrc")
   n_ends=$(grep -cFx "$END_MARK" "$HOME/.bashrc")

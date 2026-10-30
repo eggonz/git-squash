@@ -36,29 +36,31 @@ Only local branches are renamed. The rename is skipped if the target branch alre
 ## install
 
 ```bash
-chmod +x install
-./install
+./install.sh [install_dir]
 ```
-The terminal might need to be restarted after installation.
+
+- `install_dir` is the folder where the `squash` command is installed (default: `~/bin`).
+  It is created if it does not exist, and it must be writable by the current user.
+- Restart the terminal or run `source ~/.bashrc` after installation.
 
 The script will do the following:
-1. Remove any existing installation (same as `./uninstall`)
-2. Copy `squash` script to `~/bin/`
-3. Append autocomplete script to `~/.bashrc`
+1. Remove any existing installation (same as `./uninstall.sh`), wherever it was installed
+2. Install `squash.sh` as the executable command `install_dir/squash`
+3. Append a block to `~/.bashrc` that adds `install_dir` to `PATH` (if not already there) and enables autocomplete
 
-The tool can be reinstalled or updated over an existing installation running `./install` again.
+The tool can be reinstalled, updated or moved to another folder by running `./install.sh` again.
 The configuration is kept, since it is stored in git config.
+An existing `install_dir/squash` file that does not belong to this tool is never overwritten.
 
 ## uninstall
 
 ```bash
-chmod +x uninstall
-./uninstall
+./uninstall.sh
 ```
 
 The script will do the following:
-1. Remove `squash` script from `~/bin/`
-2. Remove autocomplete script from `~/.bashrc`
+1. Remove the `squash` command from the folder where it was installed
+2. Remove the `PATH` and autocomplete block from `~/.bashrc`
 
 ---
 
@@ -81,10 +83,10 @@ The script will do the following:
   - https://linuxize.com/post/how-to-compare-strings-in-bash/
   - https://askubuntu.com/questions/29370/how-to-check-if-a-command-succeeded
   - https://www.ionos.com/digitalguide/websites/web-development/renaming-a-git-branch/
-- install
+- install.sh
   - https://linuxconfig.org/bash-scripting-check-if-directory-exists
   - https://unix.stackexchange.com/questions/253892/syntax-error-unexpected-when-creating-an-array
-- uninstall
+- uninstall.sh
   - https://www.baeldung.com/linux/delete-lines-containing-string-from-file
   - https://stackoverflow.com/questions/23929235/multi-line-string-with-extra-space-preserved-indentation
   - https://stackoverflow.com/questions/6958841/use-grep-to-report-back-only-line-numbers
