@@ -45,12 +45,26 @@ Only local branches are renamed. The rename is skipped if the target branch alre
 - Options to set the [configuration](#configuration) (saved in the global git config, left unchanged if not given):
   - `--rename` / `--no-rename`: enable/disable renaming `<src_branch>` after merging
   - `--rename-pattern <pattern>`: new name of the merged branch, must contain `<branch>`
+- `-y`, `--yes`: install without asking for confirmation (required when not run from a terminal)
 
 ```bash
 # example: install in ~/.local/bin, rename merged branches to "done/<branch>"
 ./install.sh --rename-pattern "done/<branch>" ~/.local/bin
 ```
 - Restart the terminal or run `source ~/.bashrc` after installation.
+
+Before making any changes, the script shows a summary and asks for confirmation:
+
+```
+squash installation
+  install path         : /home/user/bin/squash
+  existing installation: /home/user/bin/squash (will be replaced)
+configuration (global git config)
+  squash.renameMerged  : true (default)
+  squash.renamePattern : merged/<branch> -> done/<branch>
+
+Proceed with installation? [Y/n]
+```
 
 The script will do the following:
 1. Remove any existing installation (same as `./uninstall.sh`), wherever it was installed
