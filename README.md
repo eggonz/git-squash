@@ -20,7 +20,8 @@ squash <src_branch>
 
 ## configuration
 
-Settings are read with `git config` (add `--global` to apply them to all repositories):
+Settings are read with `git config` (add `--global` to apply them to all repositories).
+They can also be set globally when installing (see [install](#install)).
 
 ```bash
 # enable/disable renaming <src_branch> after merging (default: true)
@@ -36,17 +37,26 @@ Only local branches are renamed. The rename is skipped if the target branch alre
 ## install
 
 ```bash
-./install.sh [install_dir]
+./install.sh [options] [install_dir]
 ```
 
 - `install_dir` is the folder where the `squash` command is installed (default: `~/bin`).
   It is created if it does not exist, and it must be writable by the current user.
+- Options to set the [configuration](#configuration) (saved in the global git config, left unchanged if not given):
+  - `--rename` / `--no-rename`: enable/disable renaming `<src_branch>` after merging
+  - `--rename-pattern <pattern>`: new name of the merged branch, must contain `<branch>`
+
+```bash
+# example: install in ~/.local/bin, rename merged branches to "done/<branch>"
+./install.sh --rename-pattern "done/<branch>" ~/.local/bin
+```
 - Restart the terminal or run `source ~/.bashrc` after installation.
 
 The script will do the following:
 1. Remove any existing installation (same as `./uninstall.sh`), wherever it was installed
 2. Install `squash.sh` as the executable command `install_dir/squash`
-3. Append a block to `~/.bashrc` that adds `install_dir` to `PATH` (if not already there) and enables autocomplete
+3. Save the given configuration options with `git config --global`
+4. Append a block to `~/.bashrc` that adds `install_dir` to `PATH` (if not already there) and enables autocomplete
 
 The tool can be reinstalled, updated or moved to another folder by running `./install.sh` again.
 The configuration is kept, since it is stored in git config.
