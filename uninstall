@@ -1,28 +1,33 @@
 #!/bin/bash
 
+START_MARK="# >>> squash-autocomplete >>>"
+END_MARK="# <<< squash-autocomplete <<<"
+
 # remove executable from ~/bin/
-rm $HOME/bin/squash 2>/dev/null
+rm -f "$HOME/bin/squash"
 
 
 # remove autocomplete from ~/.bashrc
-starts=($(grep -nFx "# >>> squash-autocomplete >>>" $HOME/.bashrc | cut -f1 -d:))
-ends=($(grep -nFx "# <<< squash-autocomplete <<<" $HOME/.bashrc | cut -f1 -d:))
+if [ -f "$HOME/.bashrc" ]; then
+  n_starts=$(grep -cFx "$START_MARK" "$HOME/.bashrc")
+  n_ends=$(grep -cFx "$END_MARK" "$HOME/.bashrc")
 
-if (( ${#starts[@]} )); then
-  # not empty array
+  if [ "$n_starts" -ne "$n_ends" ]; then
+    echo "[squash ERROR] Unbalanced autocomplete markers in ~/.bashrc, please remove them manually"
+    exit 1
+  fi
 
-  # find lines to delete
-  del_lines=""
-  for idx in "${!starts[@]}"; do
-    # loop through pairs
-    start=${starts[$idx]}  # start line
-    start="$(($start-1))"
-    end=${ends[$idx]}  # end line
-    del_lines="${del_lines}${start},${end}d;"
-  done
-  del_lines=${del_lines::-1}  # remove last semicolon
-
-  # delete lines in between
-  sed -e "$del_lines" $HOME/.bashrc > tmpfile
-  mv tmpfile $HOME/.bashrc
+  if [ "$n_starts" -gt 0 ]; then
+    # delete each block, together with the blank line added before it
+    tmpfile=$(mktemp)
+    awk -v s="$START_MARK" -v e="$END_MARK" '
+      skip { if ($0 == e) skip = 0; next }
+      $0 == s { skip = 1; has_blank = 0; next }
+      has_blank { print blank; has_blank = 0 }
+      /^[[:space:]]*$/ { blank = $0; has_blank = 1; next }
+      { print }
+      END { if (has_blank) print blank }
+    ' "$HOME/.bashrc" > "$tmpfile" && cat "$tmpfile" > "$HOME/.bashrc"  # keep file permissions/symlinks
+    rm -f "$tmpfile"
+  fi
 fi

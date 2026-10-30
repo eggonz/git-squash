@@ -1,8 +1,10 @@
 # git-squash customized tool
 
 The `squash` command performs a squash-merge from `<src_branch>` to the current branch.
-The squash commit message contains the name of the merged branch and information about the squashed commits from the original branch.
+The squash commit message (`[squash] <src_branch>`) contains the name of the merged branch and information about the squashed commits from the original branch.
 The commits in the original branch are kept unsquashed.
+Uncommitted local changes are stashed before the merge and restored afterwards.
+After merging, `<src_branch>` is renamed to `merged/<src_branch>` (configurable, see below).
 
 ## use
 
@@ -14,6 +16,21 @@ squash <src_branch>
 
 - `<src_branch>` can be tab-autocompleted with the branches of the current git repository.
 - `<src_branch>` cannot be null, and it must exist in the repository.
+- If the merge fails (e.g. conflicts), the squash is aborted and local changes are restored.
+
+## configuration
+
+Settings are read with `git config` (add `--global` to apply them to all repositories):
+
+```bash
+# enable/disable renaming <src_branch> after merging (default: true)
+git config squash.renameMerged false
+
+# new name of the merged branch, <branch> is replaced by the original name (default: "merged/<branch>")
+git config squash.renamePattern "done/<branch>"
+```
+
+Only local branches are renamed. The rename is skipped if the target branch already exists.
 
 
 ## install
@@ -25,11 +42,12 @@ chmod +x install
 The terminal might need to be restarted after installation.
 
 The script will do the following:
-1. Copy `squash` script to `~/bin/`
-2. Remove existing autocomplete script from `~/.bashrc`
+1. Remove any existing installation (same as `./uninstall`)
+2. Copy `squash` script to `~/bin/`
 3. Append autocomplete script to `~/.bashrc`
 
-The tool can be reinstalled running `./install` again.
+The tool can be reinstalled or updated over an existing installation running `./install` again.
+The configuration is kept, since it is stored in git config.
 
 ## uninstall
 
